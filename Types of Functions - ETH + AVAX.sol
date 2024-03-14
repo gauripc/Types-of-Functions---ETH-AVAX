@@ -1,43 +1,19 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+contract Token is ERC20{
+    address public owner;
+    constructor(string memory name,string memory symbol) ERC20(name,symbol){
+        owner=msg.sender;
+    }
 
-contract Token {
+    modifier onlyOwner{
+        require(msg.sender==owner,"Only owner can do this");
+        _;
+    }
 
-  uint256 public totalSupply;
-  address public owner;
-  string public name = "BlackRock";
-    string public symbol = "BLRK";
-    uint8 public decimals = 18;
+    function mint(address _to,uint a mount) public onlyOwner {
+        _mint(_to,amount);
+    }
 
-  constructor() {
-    owner = msg.sender;
-  }
-
-  mapping(address => uint256) public balances;
-
-  // Mint function
-  function mint(address to, uint256 amount) public {
-    require(msg.sender == owner, "Only the contract owner can mint tokens.");
-    require(amount > 0, "Amount must be greater than 0.");
-
-    balances[to] += amount;
-    totalSupply += amount;
-  }
-
-  // Burn function
-  function burn(address from, uint256 amount) public {
-    require(amount <= balances[from], "Amount exceeds balance.");
-
-    balances[from] -= amount;
-    totalSupply -= amount;
-  }
-
-  // Transfer function
-  function transfer(address to, uint256 amount) public {
-    require(amount <= balances[msg.sender], "Amount exceeds balance.");
-    require(to != address(0), "Cannot transfer to the zero address.");
-
-    balances[msg.sender] -= amount;
-    balances[to] += amount;
-  }
 }
